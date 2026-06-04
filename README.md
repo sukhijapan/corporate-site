@@ -80,6 +80,34 @@ The stack provisions:
   pointing at API Gateway.
 - **API Gateway + Lambda + SES** — the contact form backend.
 
+### Custom domain (www.ozcc.com.au)
+
+The site serves on `www.ozcc.com.au` via a custom domain attached to CloudFront.
+
+1. **Certificate** — CloudFront requires an ACM certificate in **`us-east-1`**. The existing
+   `*.ozcc.com.au` wildcard cert in us-east-1 covers `www.ozcc.com.au`. Provide its ARN at deploy
+   time via context or env:
+
+   ```bash
+   npx cdk deploy \
+     -c domainName=www.ozcc.com.au \
+     -c certificateArn=arn:aws:acm:us-east-1:<account>:certificate/<id>
+   # or set DOMAIN_NAME / CERTIFICATE_ARN env vars (the deploy workflow reads these
+   # from repository Variables `DOMAIN_NAME` and `CERTIFICATE_ARN`).
+   ```
+
+   Without a certificate ARN the distribution falls back to its default `*.cloudfront.net` domain,
+   so deploys still work before DNS is cut over.
+
+2. **DNS** — after deploy, the `DnsRecordToCreate` stack output prints the exact record. Create a
+   `CNAME` at your DNS provider:
+
+   ```
+   www.ozcc.com.au.  CNAME  dXXXXXXXX.cloudfront.net.
+   ```
+
+   (Apex `ozcc.com.au` can't be a CNAME — use your provider's ALIAS/ANAME, or redirect it to `www`.)
+
 CI/CD: [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) builds the frontend and runs
 `cdk deploy` on every push to `main`, using the `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY`
 repository secrets.

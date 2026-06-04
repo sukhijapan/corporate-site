@@ -6,6 +6,7 @@ import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as iam from 'aws-cdk-lib/aws-iam';
+import * as acm from 'aws-cdk-lib/aws-certificatemanager';
 import { Construct } from 'constructs';
 import * as path from 'path';
 
@@ -19,6 +20,15 @@ export class InfraStack extends cdk.Stack {
       this.node.tryGetContext('contactSender') ?? process.env.CONTACT_SENDER ?? 'hello@ozcc.com.au';
     const contactRecipient =
       this.node.tryGetContext('contactRecipient') ?? process.env.CONTACT_RECIPIENT ?? 'hello@ozcc.com.au';
+
+    // Custom domain. The certificate MUST be an ACM cert in us-east-1 for
+    // CloudFront. Supply the ARN via `-c certificateArn=...` or CERTIFICATE_ARN;
+    // when absent the distribution falls back to the default *.cloudfront.net domain.
+    const domainName = this.node.tryGetContext('domainName') ?? process.env.DOMAIN_NAME ?? 'www.ozcc.com.au';
+    const certificateArn = this.node.tryGetContext('certificateArn') ?? process.env.CERTIFICATE_ARN;
+    const certificate = certificateArn
+      ? acm.Certificate.fromCertificateArn(this, 'SiteCertificate', certificateArn)
+      : undefined;
 
     // S3 bucket for the website
     const websiteBucket = new s3.Bucket(this, 'WebsiteBucket', {
@@ -68,6 +78,7 @@ export class InfraStack extends cdk.Stack {
 
     // CloudFront distribution: S3 for the SPA, API Gateway for /api/*
     const distribution = new cloudfront.Distribution(this, 'WebsiteDistribution', {
+      ...(certificate ? { domainNames: [domainName], certificate } : {}),
       defaultBehavior: {
         origin: origins.S3BucketOrigin.withOriginAccessControl(websiteBucket),
         viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
@@ -105,18 +116,28 @@ export class InfraStack extends cdk.Stack {
       distributionPaths: ['/*'],
     });
 
+    const siteHost = certificate ? domainName : distribution.distributionDomainName;
+
     // Outputs
     new cdk.CfnOutput(this, 'DistributionDomainName', {
       value: distribution.distributionDomainName,
+      description: 'CloudFront domain — use this as the CNAME target for your custom domain.',
     });
 
     new cdk.CfnOutput(this, 'SiteUrl', {
-      value: `https://${distribution.distributionDomainName}`,
+      value: `https://${siteHost}`,
     });
 
     new cdk.CfnOutput(this, 'ContactApiUrl', {
-      value: `https://${distribution.distributionDomainName}/api/contact`,
+      value: `https://${siteHost}/api/contact`,
       description: 'Same-origin contact endpoint served via CloudFront.',
     });
+
+    if (certificate) {
+      new cdk.CfnOutput(this, 'DnsRecordToCreate', {
+        value: `CNAME  ${domainName}.  ->  ${distribution.distributionDomainName}`,
+        description: 'Create this DNS record at your provider to point the domain at CloudFront.',
+      });
+    }
   }
 }

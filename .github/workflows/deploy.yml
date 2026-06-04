@@ -38,6 +38,14 @@ jobs:
           aws-region: ap-southeast-2
 
       - name: Deploy with CDK
+        env:
+          # Custom domain + ACM cert (cert must be in us-east-1 for CloudFront).
+          # Set these as repository Variables; the ARN is not a secret.
+          DOMAIN_NAME: ${{ vars.DOMAIN_NAME }}
+          CERTIFICATE_ARN: ${{ vars.CERTIFICATE_ARN }}
+          # Verified SES identities for the contact form.
+          CONTACT_SENDER: ${{ vars.CONTACT_SENDER }}
+          CONTACT_RECIPIENT: ${{ vars.CONTACT_RECIPIENT }}
         run: |
           cd infra
           npx cdk deploy --require-approval never
