@@ -25,7 +25,12 @@ export class InfraStack extends cdk.Stack {
     // CloudFront. Supply the ARN via `-c certificateArn=...` or CERTIFICATE_ARN;
     // when absent the distribution falls back to the default *.cloudfront.net domain.
     const domainName = this.node.tryGetContext('domainName') ?? process.env.DOMAIN_NAME ?? 'www.ozcc.com.au';
-    const certificateArn = this.node.tryGetContext('certificateArn') ?? process.env.CERTIFICATE_ARN;
+    // Default to the *.ozcc.com.au wildcard cert in us-east-1 (one of two
+    // duplicates in the account). Override with -c certificateArn=... / CERTIFICATE_ARN.
+    const certificateArn =
+      this.node.tryGetContext('certificateArn') ??
+      process.env.CERTIFICATE_ARN ??
+      'arn:aws:acm:us-east-1:989346119403:certificate/b16c4d9c-202c-4e1e-881f-49a0e742b763';
     const certificate = certificateArn
       ? acm.Certificate.fromCertificateArn(this, 'SiteCertificate', certificateArn)
       : undefined;
