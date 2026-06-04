@@ -1,8 +1,15 @@
 .service-block {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4rem;
   margin-bottom: 6rem;
+}
+
+/* Offset anchor so #hash links don't hide content under the sticky header. */
+.service-block-anchor {
+  position: absolute;
+  top: calc(-1 * var(--header-height) - 1rem);
 }
 
 .service-block.reverse {
@@ -47,19 +54,22 @@
   color: var(--accent);
 }
 
-.service-icon-placeholder {
+.service-visual {
   flex: 1;
   aspect-ratio: 1/1;
-  background-color: var(--bg-alt);
+  max-width: 260px;
+  background: linear-gradient(135deg, var(--bg-alt), #eef2f7);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--primary);
   border: 8px solid var(--secondary);
-  opacity: 0.8;
+  box-shadow: 0 12px 30px rgba(0, 33, 71, 0.08);
+}
+
+.service-visual .service-icon {
+  width: 45%;
+  height: 45%;
 }
 
 @media (max-width: 768px) {
@@ -79,8 +89,7 @@
     display: inline-block;
   }
   
-  .service-icon-placeholder {
-    width: 150px;
-    height: 150px;
+  .service-visual {
+    width: 180px;
   }
 }

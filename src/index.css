@@ -123,6 +123,89 @@ img {
   transform: translateY(-2px);
 }
 
+.btn-outline {
+  background-color: transparent;
+  color: var(--text-on-primary);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+.btn-outline:hover {
+  background-color: rgba(255, 255, 255, 0.12);
+  color: var(--text-on-primary);
+  border-color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-block {
+  display: block;
+  width: 100%;
+}
+
+.btn:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Accessible skip link */
+.skip-link {
+  position: absolute;
+  left: 1rem;
+  top: -100px;
+  z-index: 2000;
+  background: var(--primary);
+  color: #fff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0 0 6px 6px;
+  font-weight: 600;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 0;
+  color: #fff;
+}
+
+/* Shared page header (Services / Software / About / Contact) */
+.page-header {
+  background-color: var(--primary);
+  color: white;
+  padding: 5rem 0;
+  text-align: center;
+}
+
+.page-header h1 {
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.page-header .lead {
+  font-size: 1.25rem;
+  opacity: 0.9;
+}
+
+/* Shared CTA band */
+.cta-section {
+  background-color: var(--primary);
+  color: white;
+}
+
+.cta-section h2 {
+  color: white;
+}
+
+/* Shared helpers used across pages */
+.bg-alt { background-color: var(--bg-alt); }
+
+.text-link {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.text-link:hover {
+  color: var(--primary);
+}
+
 /* Utilities */
 .text-center { text-align: center; }
 .mt-1 { margin-top: 1rem; }

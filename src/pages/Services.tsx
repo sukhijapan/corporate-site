@@ -1,9 +1,58 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import Seo from '../components/Seo';
+import Reveal from '../components/Reveal';
+import { QmsIcon, AuditIcon, ComplianceIcon } from '../components/illustrations';
 import './Services.css';
+
+const blocks = [
+  {
+    id: 'qms',
+    title: 'QMS Setup & Optimization',
+    icon: <QmsIcon />,
+    body: 'A Quality Management System (QMS) is the backbone of successful project delivery. We help you design, implement, and optimize a QMS that is both compliant with ISO 9001 and practical for site teams.',
+    points: [
+      'Policy and Procedure development',
+      'Customized ITP templates for specific trades',
+      'Process mapping and workflow optimization',
+      'Integration with existing corporate systems',
+    ],
+  },
+  {
+    id: 'audit',
+    title: 'Audit Preparation & Support',
+    icon: <AuditIcon />,
+    reverse: true,
+    body: "Don't let audits catch you off guard. We provide rigorous pre-audit reviews and on-site support to ensure your documentation and processes stand up to the highest level of scrutiny.",
+    points: [
+      'Internal quality audits and gap analysis',
+      'External audit preparation (ISO certification)',
+      'Non-Conformance Report (NCR) close-out support',
+      'Subcontractor quality performance reviews',
+    ],
+  },
+  {
+    id: 'compliance',
+    title: 'Construction Governance & Compliance',
+    icon: <ComplianceIcon />,
+    body: 'We provide the oversight needed to ensure every aspect of your project adheres to Australian standards, regulatory requirements, and client specifications.',
+    points: [
+      'Site governance framework setup',
+      'Legislative compliance monitoring',
+      'Project-specific Quality Plan (PQP) creation',
+      'Independent third-party inspections',
+    ],
+  },
+];
 
 const Services: React.FC = () => {
   return (
     <div className="services-page">
+      <Seo
+        title="Consulting Services"
+        description="QMS setup, audit preparation and construction governance & compliance services for Australian Tier 1 and Tier 2 projects."
+      />
+
       <section className="page-header">
         <div className="container">
           <h1>Consulting Services</h1>
@@ -13,66 +62,31 @@ const Services: React.FC = () => {
 
       <section className="section services-detail">
         <div className="container">
-          <div className="service-block" id="qms">
-            <div className="service-text">
-              <h2>QMS Setup & Optimization</h2>
-              <p>
-                A Quality Management System (QMS) is the backbone of successful project delivery. 
-                We help you design, implement, and optimize a QMS that is both compliant with ISO 9001 
-                and practical for site teams.
-              </p>
-              <ul>
-                <li>Policy and Procedure development</li>
-                <li>Customized ITP templates for specific trades</li>
-                <li>Process mapping and workflow optimization</li>
-                <li>Integration with existing corporate systems</li>
-              </ul>
-            </div>
-            <div className="service-icon-placeholder">QMS</div>
-          </div>
-
-          <div className="service-block reverse" id="audit">
-            <div className="service-text">
-              <h2>Audit Preparation & Support</h2>
-              <p>
-                Don't let audits catch you off guard. We provide rigorous pre-audit reviews 
-                and on-site support to ensure your documentation and processes stand up to 
-                the highest level of scrutiny.
-              </p>
-              <ul>
-                <li>Internal quality audits and gap analysis</li>
-                <li>External audit preparation (ISO certification)</li>
-                <li>Non-Conformance Report (NCR) close-out support</li>
-                <li>Subcontractor quality performance reviews</li>
-              </ul>
-            </div>
-            <div className="service-icon-placeholder">AUDIT</div>
-          </div>
-
-          <div className="service-block" id="compliance">
-            <div className="service-text">
-              <h2>Construction Governance & Compliance</h2>
-              <p>
-                We provide the oversight needed to ensure every aspect of your project 
-                adheres to Australian standards, regulatory requirements, and client specifications.
-              </p>
-              <ul>
-                <li>Site governance framework setup</li>
-                <li>Legislative compliance monitoring</li>
-                <li>Project-specific Quality Plan (PQP) creation</li>
-                <li>Independent third-party inspections</li>
-              </ul>
-            </div>
-            <div className="service-icon-placeholder">GOV</div>
-          </div>
+          {blocks.map((block) => (
+            <Reveal key={block.id} className={`service-block ${block.reverse ? 'reverse' : ''}`}>
+              <div className="service-block-anchor" id={block.id} />
+              <div className="service-text">
+                <h2>{block.title}</h2>
+                <p>{block.body}</p>
+                <ul>
+                  {block.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="service-visual">{block.icon}</div>
+            </Reveal>
+          ))}
         </div>
       </section>
 
       <section className="section cta-section">
         <div className="container text-center">
-          <h2>Need a tailored quality strategy?</h2>
-          <p className="mb-2">Our consultants are ready to help you optimize your project governance.</p>
-          <a href="/contact" className="btn btn-accent">Request a Consultation</a>
+          <Reveal>
+            <h2>Need a tailored quality strategy?</h2>
+            <p className="mb-2">Our consultants are ready to help you optimize your project governance.</p>
+            <Link to="/contact" className="btn btn-accent">Request a Consultation</Link>
+          </Reveal>
         </div>
       </section>
     </div>

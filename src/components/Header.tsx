@@ -1,28 +1,80 @@
-import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import Logo from './Logo';
+import { site } from '../config/site';
 import './Header.css';
 
+const navLinks = [
+  { to: '/', label: 'Home', end: true },
+  { to: '/services', label: 'Services' },
+  { to: '/software', label: 'Software' },
+  { to: '/about', label: 'About' },
+  { to: '/contact', label: 'Contact' },
+];
+
 const Header: React.FC = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
+  // Lock body scroll and allow ESC to close while the menu is open.
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMenuOpen(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = '';
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [menuOpen]);
+
+  const linkClass = ({ isActive }: { isActive: boolean }) =>
+    isActive ? 'nav-link active' : 'nav-link';
+
   return (
     <header className="header">
       <div className="container header-container">
-        <Link to="/" className="logo-container">
-          <span className="logo-text">OZCC</span>
-          <span className="logo-subtext">Construction & Consulting</span>
-        </Link>
-        <nav className="nav">
+        <Logo onClick={closeMenu} />
+
+        <nav id="primary-navigation" className={`nav ${menuOpen ? 'nav-open' : ''}`} aria-label="Primary">
           <ul className="nav-list">
-            <li><NavLink to="/" end className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Home</NavLink></li>
-            <li><NavLink to="/services" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Services</NavLink></li>
-            <li><NavLink to="/software" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Software</NavLink></li>
-            <li><NavLink to="/about" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>About</NavLink></li>
-            <li><NavLink to="/contact" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>Contact</NavLink></li>
+            {navLinks.map((link) => (
+              <li key={link.to}>
+                <NavLink to={link.to} end={link.end} className={linkClass} onClick={closeMenu}>
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+            <li className="nav-cta-mobile">
+              <a href={site.appUrl} className="btn btn-accent" target="_blank" rel="noopener noreferrer">
+                Login to ITPapp
+              </a>
+            </li>
           </ul>
         </nav>
+
         <div className="header-cta">
-          <a href="https://quality.ozcc.com.au" className="btn btn-accent">Login to ITPapp</a>
+          <a href={site.appUrl} className="btn btn-accent" target="_blank" rel="noopener noreferrer">
+            Login to ITPapp
+          </a>
         </div>
+
+        <button
+          type="button"
+          className={`nav-toggle ${menuOpen ? 'is-open' : ''}`}
+          aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={menuOpen}
+          aria-controls="primary-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span className="nav-toggle-bar" />
+          <span className="nav-toggle-bar" />
+          <span className="nav-toggle-bar" />
+        </button>
       </div>
+
+      {menuOpen && <div className="nav-backdrop" onClick={() => setMenuOpen(false)} aria-hidden="true" />}
     </header>
   );
 };
