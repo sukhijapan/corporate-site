@@ -12,6 +12,16 @@ dist
 dist-ssr
 *.local
 
+# GitHub CLI binary
+/gh
+/gh.zip
+
+# CDK
+infra/node_modules/
+infra/cdk.out/
+infra/*.js
+infra/*.d.ts
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
